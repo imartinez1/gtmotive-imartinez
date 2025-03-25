@@ -12,6 +12,7 @@
     <ItemGroup>
         <PackageReference Include="Acheve.TestHost" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>

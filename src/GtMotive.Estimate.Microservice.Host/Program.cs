@@ -40,7 +40,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateRentalRequestValidati
 builder.Services.AddValidatorsFromAssemblyContaining<DeleteRentalRequestValidation>();
 
 // Configuration.
-if (!builder.Environment.IsDevelopment())
+if (!builder.Environment.IsDevelopment() && !builder.Environment.IsTesting())
 {
     builder.Configuration.AddJsonFile("serilogsettings.json", optional: false, reloadOnChange: true);
 
@@ -63,7 +63,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // Add services to the container.
-if (!builder.Environment.IsDevelopment())
+if (!builder.Environment.IsDevelopment() && !builder.Environment.IsTesting())
 {
     builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
     builder.Services.AddApplicationInsightsKubernetesEnricher();
@@ -148,7 +148,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Logging configuration.
-Log.Logger = builder.Environment.IsDevelopment() ?
+Log.Logger = (builder.Environment.IsDevelopment() || builder.Environment.IsTesting()) ?
     new LoggerConfiguration()
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
         .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
@@ -172,7 +172,7 @@ Log.Logger = builder.Environment.IsDevelopment() ?
 
 var pathBase = new PathBase(builder.Configuration.GetValue("PathBase", defaultValue: PathBase.DefaultPathBase));
 
-if (!pathBase.IsDefault)
+if (!pathBase.IsDefault && !builder.Environment.IsTesting())
 {
     app.UsePathBase(pathBase.CurrentWithoutTrailingSlash);
 }
@@ -191,7 +191,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.MigrateDatabase<ApplicationDbContext>();
+if (!builder.Environment.IsTesting())
+{
+    app.MigrateDatabase<ApplicationDbContext>();
+}
 
 await app.RunAsync();
 
