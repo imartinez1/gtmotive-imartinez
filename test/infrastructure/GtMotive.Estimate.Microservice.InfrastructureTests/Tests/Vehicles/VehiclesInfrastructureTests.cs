@@ -14,7 +14,7 @@ namespace GtMotive.Estimate.Microservice.InfrastructureTests.Tests.Vehicles
         [Fact]
         public async Task PostVehicleShouldFailValidationWhenYearIsInvalid()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
             await using var application = new TestWebApplication();
             var client = application.CreateClient();
 
